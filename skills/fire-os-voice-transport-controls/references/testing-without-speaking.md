@@ -106,4 +106,6 @@ On Git Bash for Windows, set `MSYS_NO_PATHCONV=1` so the paths in these commands
 - Each advertised action arrives as its callback; an action that isn't advertised is absent from the PlaybackState.
 - "pause" sent twice leaves the screen paused (catches a voice callback wired to a toggle).
 - After `onStop`, the session is inactive; after `onStart`, active again.
+- With an activity in front, `input keyevent KEYCODE_HOME` delivers `onPause()` from uid 1000 (Fire OS only): assert the
+  app ignores it if its state is shared. Put an activity in front first; Fire OS only pauses the app on screen.
 - A held D-pad key pages once; a key the screen declines still moves focus.

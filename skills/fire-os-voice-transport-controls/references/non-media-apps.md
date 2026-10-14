@@ -98,6 +98,27 @@ plays sound, that may be some other app.
 
 The microphone button always goes to Alexa; apps can't intercept it.
 
+## Fire OS pauses the app in front on Home
+
+When the user presses Home, Fire OS's key policy (in the system server) sends `onPause()` to the session of the
+app in front, about 150 ms **before** the activity's own `onPause`. Lifecycle callbacks can't filter it out.
+For a video that's right. For a screen whose state is shared, such as a class timer shown on every TV in a gym,
+one person leaving the app on one TV would pause the class everywhere.
+
+Tell it apart by the caller, which is available inside a callback on API 28+ (Fire OS 7 and later):
+
+```kotlin
+override fun onPause() {
+    val caller = if (Build.VERSION.SDK_INT >= 28) session.currentControllerInfo else null
+    if (caller?.uid == Process.SYSTEM_UID) return // Fire OS on Home, not a person
+    board.pause()
+}
+```
+
+Alexa's voice service and the Fire TV mobile app are ordinary apps with their own uids. A debug adb hook calls from
+the app's own process. Log `caller.packageName` and `caller.uid` with every command so the next surprise is easy
+to spot.
+
 ## Gotchas
 
 - **Debug logs vanish.** Fire OS drops `Log.d` lines. Log received commands at `Log.i` so

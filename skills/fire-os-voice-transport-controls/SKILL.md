@@ -38,7 +38,8 @@ anyone speaking to the TV**.
 4. **Voice is not a toggle.** `onPause()` must pause and `onPlay()` must resume. Only the remote's Play/Pause
    *key* toggles. If `onPause` calls a toggle, a second "Alexa, pause" resumes the class.
 5. **Lifecycle.** Set `isActive = false` in `onStop` and back to `true` in `onStart`, so "Alexa, pause" said while
-   another app is in front never reaches this one. Call `release()` in `onDestroy`.
+   another app is in front never reaches this one. Call `release()` in `onDestroy`. Fire OS also sends
+   `onPause()` from the system when Home is pressed; ignore it if the screen's state is shared (see the reference).
 6. **Remote keys.** Handle transport keys in `Activity.dispatchKeyEvent`. Take the D-pad and select keys only on
    screens with nothing focusable (signage, timers); a menu needs them for focus. Never take Back or Home.
 7. **Test without speaking.** Add the debug-only adb hook and the tests in
@@ -65,6 +66,7 @@ anyone speaking to the TV**.
 ├─ Session never set active / released too early  → Workflow 2, 5
 ├─ Action missing from the PlaybackState          → non-media-apps.md#what-to-advertise
 ├─ Works once, then the second "pause" resumes    → Workflow 4
+├─ The class pauses when someone presses Home     → non-media-apps.md#fire-os-pauses-the-app-in-front-on-home
 └─ Another app's session wins                     → Workflow 5; check `adb shell dumpsys media_session`
 
 Adding controls to a new screen
